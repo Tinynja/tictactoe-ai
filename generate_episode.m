@@ -1,11 +1,11 @@
-function episode = generate_episode(policy_p1, policy_p2, state_0, first_round)
+function episode = generate_episode(index_p1, policy_p1, index_p2, policy_p2, state_0, first_round)
 %GENERATE_EPISODE Generates a TicTacToe episode based on the given policy
 %   
 
 state = state_0;
 
 if first_round == 'o'
-	state(generate_action(policy_p2, state)) = 'o';
+	state(generate_action(index_p2, policy_p2, state)) = 'o';
 end
 
 episode = cell(3,1);
@@ -15,7 +15,7 @@ while 1
 	i = i+1;
 	
 	episode{1,i} = state;
-	episode{2,i} = generate_action(policy_p1, episode{1,i});
+	episode{2,i} = generate_action(index_p1, policy_p1, episode{1,i});
 	state(episode{2,i}) = 'x';
 	
 	win_state = check_winner(state);
@@ -29,7 +29,7 @@ while 1
 		end
 	end
 	
-	state(generate_action(policy_p2, state)) = 'o';
+	state(generate_action(index_p2, policy_p2, state)) = 'o';
 	
 	win_state = check_winner(state);
 	if win_state == 'o'

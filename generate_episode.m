@@ -1,8 +1,12 @@
-function episode = generate_episode(policy, state_0)
+function episode = generate_episode(policy, state_0, first_player)
 %GENERATE_EPISODE Generates a TicTacToe episode based on the given policy
 %   
 
 state = state_0;
+
+if ~first_player
+	state(generate_action(policy, state)) = 'o';
+end
 
 episode = cell(3,1);
 

@@ -1,5 +1,6 @@
 fprintf('You are playing as O''s.\n')
 policy_1(1) = 0;
+debug = 1;
 
 while true
 
@@ -47,6 +48,7 @@ while 1
 		end
 	end
 	
+	if debug; check_state(index_1,policy_1,action_values,board); end
 	board(generate_action(index_1, policy_1, board)) = 'x';
 	win_state = check_winner(board);
 	if win_state == 'x'

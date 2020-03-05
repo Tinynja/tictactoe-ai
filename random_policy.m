@@ -16,13 +16,16 @@ clear all
 %% Main code
 
 n = 20000;
+epsilon = 0;
 
-policy = containers.Map('epsilon', 0);
+index = containers.Map('epsilon', 1);
+policy = epsilon;
 
 rounds = zeros(n, 1);
 
 for i = 1:n
-	episode = generate_episode(policy, policy, '---------', 'x');
+	if ~mod(i,floor(n/100)); fprintf('Training... %.1f%%\n', round(i/n*100, 1)); end
+	episode = generate_episode(index, policy, index, policy, '---------', 'x');
 	rounds(i) = episode{3, end-1};
 end
 

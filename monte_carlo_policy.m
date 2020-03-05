@@ -15,8 +15,8 @@ clear all
 
 %% Main code
 
-gamma = 1;
-epsilon = 0.3;
+gamma = 0.9;
+epsilon = 0.2;
 n = 20000;
 
 % The index map contains the mapping from state to index as they are stored
@@ -38,7 +38,7 @@ rounds = zeros(n, 1);
 
 for i = 1:n
 	if ~mod(i,floor(n/100)); fprintf('Training... %.1f%%\n', round(i/n*100, 1)); end
-	episode = generate_episode(index_1, policy_1, index_2, policy_2, '---------', 'o'+9*mod(i,2));
+	episode = generate_episode(index_1, policy_1, index_1, policy_1, '---------', 'o'+9*mod(i,2));
 	rounds(i) = episode{3, end-1};
 	
 	G = 0;

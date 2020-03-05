@@ -15,15 +15,22 @@ clear all
 
 %% Main code
 
-n = 20000;
+gamma = 1;
+epsilon = 0;
+n = 100;
 
-policy = containers.Map('epsilon', 0);
+policy = containers.Map('epsilon', epsilon);
 
 rounds = zeros(n, 1);
 
 for i = 1:n
 	episode = generate_episode(policy, policy, '---------', 'x');
 	rounds(i) = episode{3, end-1};
+	G = 0;
+	for j = length(episode,2)-1:-1:1
+		G = gamma*G + episode{3,j};
+		if all(cellfun(@(x) ~strcmp(x,episode(1,j)), episode(1,1:j-1), 'UniformOutput', true))
+		end
 end
 
 fprintf('rounds  win    lose   tie\n')

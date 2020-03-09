@@ -15,9 +15,12 @@ clear all
 
 %% Main code
 
-gamma = 0.9;
+%Choose who is player_2 between: random, ai_1, ai_2
+player_2 = 'ai_2';
+
+gamma = 0.8;
 epsilon = 0.2;
-n = 20000;
+n = 5000;
 
 % The index map contains the mapping from state to index as they are stored
 % in the policy and action_values cell arrays.
@@ -27,46 +30,34 @@ n = 20000;
 % the action_values cell array contains a cell for each state in the form:
 % [action_1_value #_of_visits; action_2_value #_of_visits;...]
 
+gamma_1 = gamma;
 index_1 = containers.Map('epsilon', 1);
 policy_1 = epsilon;
-action_values = {};
+action_values_1 = {};
 
+gamma_2 = gamma;
 index_2 = containers.Map('epsilon', 1);
 policy_2 = epsilon;
+action_values_2 = {};
 
 rounds = zeros(n, 1);
 
 for i = 1:n
-	if ~mod(i,floor(n/100)); fprintf('Training... %.1f%%\n', round(i/n*100, 1)); end
-	episode = generate_episode(index_1, policy_1, index_1, policy_1, '---------', 'o'+9*mod(i,2));
-	rounds(i) = episode{3, end-1};
+	if ~mod(i,500)
+		fprintf('Training... %.1f%%\n', round(i/n*100, 1))
+	end
 	
-	G = 0;
-	for j = size(episode,2)-1:-1:1
-		G = gamma*G + episode{3,j};
-		if all(cellfun(@(x) ~strcmp(x,episode{1,j}), episode(1,1:j-1), 'UniformOutput', true))
-			if ~isKey(index_1, episode{1,j})
-				index_1(episode{1,j}) = length(policy_1)+1;
-				action_values{index_1(episode{1,j})} = zeros(sum(episode{1,j}=='-'),3);
-				L = 0;
-				for k = 1:9
-					if episode{1,j}(k) == '-'
-						L = L+1;
-						action_values{index_1(episode{1,j})}(L,1) = k;
-					end
-				end
-			end
-			
-			action_index = find(action_values{index_1(episode{1,j})}(:,1) == episode{2,j});
-			action_value_old = action_values{index_1(episode{1,j})}(action_index,2);
-			visits_old = action_values{index_1(episode{1,j})}(action_index,3);
-			
-			action_values{index_1(episode{1,j})}(action_index,2) = (action_value_old*visits_old+G)/(visits_old+1);
-			action_values{index_1(episode{1,j})}(action_index,3) = visits_old+1;
-			
-			action_index = find(action_values{index_1(episode{1,j})}(:,2) == max(action_values{index_1(episode{1,j})}(:,2)), 1);
-			policy_1(index_1(episode{1,j})) = action_values{index_1(episode{1,j})}(action_index,1);
-		end
+	[episode_1, episode_2] = generate_episode(index_1, policy_1, index_2, policy_2, '---------', 1+mod(i,2));
+	
+	rounds(i) = episode_1{3, end-1};
+	
+	[index_1, policy_1, action_values_1] = update_agent(episode_1, gamma_1, index_1, policy_1, action_values_1);
+	if strcmp(player_2, 'ai_1')
+		index_2 = index_1;
+		policy_2 = policy_1;
+		action_values_2 = action_values_1;
+	elseif strcmp(player_2, 'ai_2')
+		[index_2, policy_2, action_values_2] = update_agent(episode_2, gamma_2, index_2, policy_2, action_values_2);
 	end
 end
 
@@ -77,4 +68,3 @@ fprintf('%5d%6.1f%%%6.1f%%%6.1f%%\n', n, sum(rounds==1)/n*100, sum(rounds==-1)/n
 plot_results(rounds, 1)
 
 %% cleanup
-clear i j k L action_index action_value_old visits_old

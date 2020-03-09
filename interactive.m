@@ -48,7 +48,9 @@ while 1
 		end
 	end
 	
-	if debug; check_state(index_1,policy_1,action_values,board); end
+	if debug
+		check_state(index_1,policy_1,action_values_1,board)
+	end
 	board(generate_action(index_1, policy_1, board)) = 'x';
 	win_state = check_winner(board);
 	if win_state == 'x'

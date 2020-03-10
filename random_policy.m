@@ -15,7 +15,7 @@ clear all
 
 %% Main code
 
-n = 20000;
+n = 5000;
 epsilon = 0;
 
 index = containers.Map('epsilon', 1);

@@ -18,9 +18,7 @@ clear all
 %Choose who is player_2 between: random, ai_1, ai_2
 player_2 = 'ai_2';
 
-gamma = 0.8;
-epsilon = 0.2;
-n = 5000;
+n = 20000;
 
 % The index map contains the mapping from state to index as they are stored
 % in the policy and action_values cell arrays.
@@ -30,20 +28,22 @@ n = 5000;
 % the action_values cell array contains a cell for each state in the form:
 % [action_1_value #_of_visits; action_2_value #_of_visits;...]
 
-gamma_1 = gamma;
+epsilon_1 = 0;
+gamma_1 = 1;
 index_1 = containers.Map('epsilon', 1);
-policy_1 = epsilon;
+policy_1 = epsilon_1;
 action_values_1 = {};
 
-gamma_2 = gamma;
+epsilon_2 = 1;
+gamma_2 = 1;
 index_2 = containers.Map('epsilon', 1);
-policy_2 = epsilon;
+policy_2 = epsilon_2;
 action_values_2 = {};
 
 rounds = zeros(n, 1);
 
 for i = 1:n
-	if ~mod(i,500)
+	if ~mod(i,250)
 		fprintf('Training... %.1f%%\n', round(i/n*100, 1))
 	end
 	
@@ -68,3 +68,4 @@ fprintf('%5d%6.1f%%%6.1f%%%6.1f%%\n', n, sum(rounds==1)/n*100, sum(rounds==-1)/n
 plot_results(rounds, 1)
 
 %% cleanup
+clear i
